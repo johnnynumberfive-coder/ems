@@ -47,11 +47,11 @@ function loadEmployees() {
                     <td>`;
 
                 if (currentUserRoles.includes('ROLE_MANAGER') || currentUserRoles.includes('ROLE_ADMIN')) {
-                    row += `<button class="updateBtn" data-id="${id}" data-first="${e.firstName}" data-last="${e.lastName}" data-email="${e.email}">Update</button>`;
+                    row += `<button class="btn btn-success updateBtn" data-id="${id}" data-first="${e.firstName}" data-last="${e.lastName}" data-email="${e.email}">Update</button>`;
                 }
 
                 if (currentUserRoles.includes('ROLE_ADMIN')) {
-                    row += `<button class="deleteBtn" data-id="${id}">Delete</button>`;
+                    row += `<button class="btn btn-danger deleteBtn" data-id="${id}">Delete</button>`;
                 }
 
                 row += `</td></tr>`;
