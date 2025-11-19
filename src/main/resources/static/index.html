@@ -78,8 +78,8 @@
             <input type="text" name="firstName" id="updateFirst" placeholder="First Name" required>
             <input type="text" name="lastName" id="updateLast" placeholder="Last Name" required>
             <input type="email" name="email" id="updateEmail" placeholder="Email" required>
-            Profie Pic: <input type="file" name="profilePic" id="profilePic">
-            <button class="btn btn-warning type="submit">Update</button>
+            Profie Pic: <input type="file" name="updateProfilePic" id="updateProfilePic">
+            <button class="btn btn-warning" type="submit">Update</button>
             <button class="btn btn-danger" type="button" id="cancelUpdate">Cancel</button>
         </form>
     </div>
@@ -210,6 +210,10 @@
             document.getElementById('updateFirst').value = btn.dataset.first;
             document.getElementById('updateLast').value = btn.dataset.last;
             document.getElementById('updateEmail').value = btn.dataset.email;
+
+            // NEW: Reset profile pic input
+            document.getElementById('updateProfilePic').value = '';
+
             document.getElementById('updateEmployeeModal').style.display = 'block';
         }
     });
@@ -219,18 +223,21 @@
     document.getElementById('updateEmployeeForm').addEventListener('submit', function(e) {
         e.preventDefault();
         const id = document.getElementById('updateId').value;
-        const employee = {
-            firstName: document.getElementById('updateFirst').value,
-            lastName: document.getElementById('updateLast').value,
-            email: document.getElementById('updateEmail').value
-        };
+        const formData = new FormData();
+        formData.append("firstName", document.getElementById('updateFirst').value);
+        formData.append("lastName", document.getElementById('updateLast').value);
+        formData.append("email", document.getElementById('updateEmail').value);
+
+        const profilePicFile = document.getElementById('updateProfilePic').files[0];
+        if (profilePicFile) formData.append("profilePic", profilePicFile);
+
         fetch(`/employees/${id}`, {
             method: 'PUT',
             credentials: 'include',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(employee)
+            body: formData
         })
-            .then(res => {
+
+                .then(res => {
                 if (!res.ok) throw new Error("Failed to update employee: " + res.status);
                 return res.json();
             })
@@ -267,6 +274,7 @@
         }
     });
 </script>
+
 
 </body>
 </html>

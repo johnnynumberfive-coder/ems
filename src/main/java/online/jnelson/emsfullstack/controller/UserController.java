@@ -5,6 +5,7 @@ import java.security.Principal;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import jakarta.transaction.Transactional;
 import online.jnelson.emsfullstack.entity.Employee;
 import online.jnelson.emsfullstack.repository.EmployeeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,10 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
@@ -24,7 +22,37 @@ public class UserController {
     @Autowired
     private EmployeeRepository employeeRepository;
 
+    @Transactional
+    @PutMapping("/employees/{id}")
+    public ResponseEntity<Employee> updateEmployee(
+            @PathVariable Integer id,
+            @RequestParam String firstName,
+            @RequestParam String lastName,
+            @RequestParam String email,
+            @RequestParam(required = false) MultipartFile profilePic
+    ) throws IOException {
 
+        Employee e = employeeRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Employee not found: " + id));
+
+        e.setFirstName(firstName);
+        e.setLastName(lastName);
+        e.setEmail(email);
+
+        if (profilePic != null && !profilePic.isEmpty()) {
+            e.setProfilePic(profilePic.getBytes());
+        }
+
+        employeeRepository.save(e);
+
+        return ResponseEntity.ok(e);
+    }
+
+
+
+
+
+    @Transactional
     @PostMapping("/employees/add")
     public ResponseEntity<Employee> addEmployeeWithProfile(
             @RequestParam String firstName,
