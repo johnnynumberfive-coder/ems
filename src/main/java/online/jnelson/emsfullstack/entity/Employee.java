@@ -21,5 +21,12 @@ public class Employee {
     private String lastName;
     @Column(name="email")
     private String email;
+    @Lob
+    @Column(name = "profile_pic")
+    private byte[] profilePic;
+
+    public byte[] getProfilePic() { return profilePic; }
+    public void setProfilePic(byte[] profilePic) { this.profilePic = profilePic; }
+
 }
 

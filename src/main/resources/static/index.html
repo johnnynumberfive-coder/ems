@@ -64,6 +64,7 @@
             <input type="text" name="firstName" placeholder="First Name" required>
             <input type="text" name="lastName" placeholder="Last Name" required>
             <input type="email" name="email" placeholder="Email" required>
+            Profile Picture: <input type="file" name="profilePic" id="profilePic">
             <button class="btn btn-primary" type="submit">Add</button>
             <button type="button" class="btn btn-danger" id="cancelAdd">Cancel</button>
         </form>
@@ -77,6 +78,7 @@
             <input type="text" name="firstName" id="updateFirst" placeholder="First Name" required>
             <input type="text" name="lastName" id="updateLast" placeholder="Last Name" required>
             <input type="email" name="email" id="updateEmail" placeholder="Email" required>
+            Profie Pic: <input type="file" name="profilePic" id="profilePic">
             <button class="btn btn-warning type="submit">Update</button>
             <button class="btn btn-danger" type="button" id="cancelUpdate">Cancel</button>
         </form>
@@ -85,6 +87,7 @@
     <table>
         <thead>
         <tr>
+            <th>Profile Pic</th>
             <th>First Name</th>
             <th>Last Name</th>
             <th>Email</th>
@@ -126,25 +129,30 @@
                 tbody.innerHTML = '';
                 const employees = data._embedded?.employees || [];
                 if (employees.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="4" style="color:red;">No employees found</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="5" style="color:red;">No employees found</td></tr>';
                     return;
                 }
                 employees.forEach(e => {
                     const id = e._links.self.href.split('/').pop();
-                    let row = `<tr>
-                        <td>${e.firstName}</td>
-                        <td>${e.lastName}</td>
-                        <td>${e.email}</td>
-                        <td>`;
 
-                    // Update button for MANAGER/ADMIN
+                    // Profile picture or default
+                    const picSrc = e.profilePic
+                        ? `data:image/png;base64,${e.profilePic}`
+                        : '/images/default-profile.png';
+
+                    let row = `<tr>
+                    <td><img src="${picSrc}" alt="Profile Pic" style="width:50px;height:50px;border-radius:50%;"></td>
+                    <td>${e.firstName}</td>
+                    <td>${e.lastName}</td>
+                    <td>${e.email}</td>
+                    <td>`;
+
                     if (currentUserRoles.includes('ROLE_MANAGER') || currentUserRoles.includes('ROLE_ADMIN')) {
-                        row += `<button class="btn btn-warning updateBtn" data-id="${id}" data-first="${e.firstName}" data-last="${e.lastName}" data-email="${e.email}">Update</button>`;
+                        row += `<button class="updateBtn" data-id="${id}" data-first="${e.firstName}" data-last="${e.lastName}" data-email="${e.email}">Update</button>`;
                     }
 
-                    // Delete button for ADMIN only
                     if (currentUserRoles.includes('ROLE_ADMIN')) {
-                        row += `<button class="btn btn-danger deleteBtn" data-id="${id}">Delete</button>`;
+                        row += `<button class="deleteBtn" data-id="${id}">Delete</button>`;
                     }
 
                     row += `</td></tr>`;
@@ -153,7 +161,7 @@
             })
             .catch(err => {
                 document.getElementById('employeesTableBody').innerHTML =
-                    '<tr><td colspan="4" style="color:red;">Failed to load employees – you may not be logged in</td></tr>';
+                    '<tr><td colspan="5" style="color:red;">Failed to load employees – you may not be logged in</td></tr>';
                 console.error(err);
             });
     }
@@ -167,19 +175,16 @@
     document.getElementById('cancelAdd').addEventListener('click', () => {
         document.getElementById('addEmployeeModal').style.display = 'none';
     });
+
+    // Add Employee Form
     document.getElementById('addEmployeeForm').addEventListener('submit', function(e) {
         e.preventDefault();
         const formData = new FormData(this);
-        const employee = {
-            firstName: formData.get('firstName'),
-            lastName: formData.get('lastName'),
-            email: formData.get('email')
-        };
-        fetch('/employees', {
+
+        fetch('/employees/add', {
             method: 'POST',
             credentials: 'include',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(employee)
+            body: formData
         })
             .then(res => {
                 if (!res.ok) throw new Error("Failed to add employee: " + res.status);
@@ -188,6 +193,7 @@
             .then(data => {
                 alert('Employee added!');
                 document.getElementById('addEmployeeModal').style.display = 'none';
+                this.reset();
                 loadEmployees();
             })
             .catch(err => {
@@ -261,5 +267,6 @@
         }
     });
 </script>
+
 </body>
 </html>
