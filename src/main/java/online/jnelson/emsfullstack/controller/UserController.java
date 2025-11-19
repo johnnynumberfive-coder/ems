@@ -48,6 +48,15 @@ public class UserController {
         return ResponseEntity.ok(e);
     }
 
+    @DeleteMapping("/employees/{id}")
+    public ResponseEntity<Void> deleteEmployee(@PathVariable Integer id) {
+        if (!employeeRepository.existsById(id)) {
+            return ResponseEntity.notFound().build();
+        }
+        employeeRepository.deleteById(id);
+        return ResponseEntity.noContent().build();
+    }
+
 
 
 

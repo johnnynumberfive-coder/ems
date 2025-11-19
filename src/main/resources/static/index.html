@@ -255,11 +255,17 @@
     // Delete Employee
     document.addEventListener('click', function(e) {
         if (e.target && e.target.classList.contains('deleteBtn')) {
+            // Only proceed if current user is admin
+            if (!currentUserRoles.includes('ROLE_ADMIN')) {
+                alert("You do not have permission to delete employees.");
+                return;
+            }
+
             const id = e.target.dataset.id;
             if (confirm('Are you sure you want to delete this employee?')) {
                 fetch(`/employees/${id}`, {
                     method: 'DELETE',
-                    credentials: 'include'
+                    credentials: 'include' // ensures session/cookies are sent
                 })
                     .then(res => {
                         if (!res.ok) throw new Error("Failed to delete employee: " + res.status);
@@ -268,7 +274,7 @@
                     })
                     .catch(err => {
                         console.error(err);
-                        alert('Error deleting employee.');
+                        alert('Error deleting employee. You may not have permission.');
                     });
             }
         }
