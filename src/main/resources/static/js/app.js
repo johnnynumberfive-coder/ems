@@ -1,3 +1,6 @@
+let toastElList = [].slice.call(document.querySelectorAll('.toast'));
+let toastList = toastElList.map(t => new bootstrap.Toast(t));
+
 let currentUserRoles = [];
 
 // Get current user roles and hide Add button if not MANAGER/ADMIN
@@ -90,16 +93,21 @@ document.getElementById('addEmployeeForm').addEventListener('submit', function(e
             return res.json();
         })
         .then(data => {
-            alert('Employee added!');
+            const toastElement = document.getElementById('addEmpToast');
+            const toast = new bootstrap.Toast(toastElement);
+            toast.show();
+
             document.getElementById('addEmployeeModal').style.display = 'none';
             this.reset();
             loadEmployees();
         })
         .catch(err => {
             console.error(err);
-            alert('Error adding employee.');
+            const toastElement = document.getElementById('addEmpErrorToast');
+            const toast = new bootstrap.Toast(toastElement);
+            toast.show();
         });
-});
+})
 
 // Update Employee Modal
 document.addEventListener('click', function(e) {
@@ -141,13 +149,17 @@ document.getElementById('updateEmployeeForm').addEventListener('submit', functio
             return res.json();
         })
         .then(data => {
-            alert('Employee updated!');
+            const toastElement = document.getElementById('updateEmpToast');
+            const toast = new bootstrap.Toast(toastElement);
+            toast.show();
             document.getElementById('updateEmployeeModal').style.display = 'none';
             loadEmployees();
         })
         .catch(err => {
             console.error(err);
-            alert('Error updating employee.');
+            const toastElement = document.getElementById('updateEmpErrorToast');
+            const toast = new bootstrap.Toast(toastElement);
+            toast.show();
         });
 });
 
@@ -168,12 +180,16 @@ document.addEventListener('click', function(e) {
             })
                 .then(res => {
                     if (!res.ok) throw new Error("Failed to delete employee: " + res.status);
-                    alert('Employee deleted!');
+                    const toastElement = document.getElementById('deleteEmpToast');
+                    const toast = new bootstrap.Toast(toastElement);
+                    toast.show();
                     loadEmployees();
                 })
                 .catch(err => {
                     console.error(err);
-                    alert('Error deleting employee. You may not have permission.');
+                    const toastElement = document.getElementById('deleteEmpErrorToast');
+                    const toast = new bootstrap.Toast(toastElement);
+                    toast.show();
                 });
         }
     }

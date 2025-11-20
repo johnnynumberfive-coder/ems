@@ -41,3 +41,8 @@ tr:hover { background: #f1f8ff; }
 
 .modal input { width: 100%!important; padding: 8px!important; margin-bottom: 10px!important; }
 .modal button { margin-right: 4px!important; }
+
+.toast-body {
+    font-size: larger;
+    font-weight: bolder;
+}
