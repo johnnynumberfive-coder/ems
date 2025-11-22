@@ -10,7 +10,7 @@
     </parent>
     <groupId>online.jnelson</groupId>
     <artifactId>ems-full-stack</artifactId>
-    <version>-1.1</version>
+    <version>1.2</version>
     <name>ems-full-stack</name>
     <description>ems-full-stack</description>
     <url/>
